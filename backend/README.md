@@ -157,6 +157,117 @@ CORS_ORIGINS=https://your-frontend.app
 uv run uvicorn src.main:app --host 0.0.0.0 --port $PORT
 ```
 
+## 🏛️ System Architecture Diagrams
+
+These diagrams visualize how your agents collaborate and how the frontend interacts with the backend. Use these for your presentation slides!
+
+---
+
+### 1. Agent Coordination (End-to-End Flow)
+
+This sequence diagram shows how the 5 agents work together to turn a single chat message into a confirmed booking.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant User as User (Frontend)
+    participant A1 as Agent 1: Requirements
+    participant A2 as Agent 2: Discovery
+    participant A3 as Agent 3: Ranking
+    participant A4 as Agent 4: Cart
+    participant A5 as Agent 5: Checkout
+
+    User->>A1: "Plan a Paris retreat..."
+    Note over A1: Step 1: Input Analysis
+    A1->>A1: Extract attendees, budget, location
+    A1-->>User: Returns Structured Brief
+
+    User->>A2: Request Discovery
+    Note over A2: Step 2: Multi-Source Discovery
+    A2->>A2: Web Search (Tavily)
+    A2-->>User: Returns Vendor Options
+
+    User->>A3: Rank with Weights
+    Note over A3: Step 3: Interactive Scoring
+    A3->>A3: Apply Weighted Math
+    A3-->>User: Returns Scored Packages
+
+    User->>A4: Build Cart
+    Note over A4: Step 4: Cart Optimization
+    A4->>A4: Calc Subtotal, Tax, Fees
+    A4-->>User: Returns Final Cart
+
+    User->>A5: Final Checkout
+    Note over A5: Step 5: Master Booking
+    A5->>A5: Simulated Payment (Stripe)
+    A5-->>User: RETURNS Master Confirmation ID
+```
+
+---
+
+### 2. Overall System Architecture
+
+Professional block diagram with color-coded layers.
+
+```mermaid
+flowchart TB
+    subgraph Presentation["Presentation Layer (Lovable)"]
+        UI["React + Tailwind UI"]
+        Session["Session Management"]
+    end
+
+    subgraph Logic["Logic Layer (Google Cloud Run)"]
+        API["FastAPI Endpoints"]
+    end
+
+    subgraph Agentic["Agentic Core (CrewAI)"]
+        RA["Requirements Analyst"]
+        DA["Discovery Agent"]
+        RankA["Ranking Agent"]
+        CA["Cart Agent"]
+        ChA["Checkout Agent"]
+    end
+
+    subgraph External["External Services"]
+        Tavily["Tavily Search API"]
+        OpenAI["OpenAI LLM"]
+        Stripe["Stripe Payments"]
+    end
+
+    UI --> Session
+    Session --> API
+    API --> RA
+    API --> DA
+    API --> RankA
+    API --> CA
+    API --> ChA
+
+    RA --> OpenAI
+    DA --> Tavily
+    DA --> OpenAI
+    RankA --> OpenAI
+    CA --> OpenAI
+    ChA --> Stripe
+    ChA --> OpenAI
+
+    style Presentation fill:#a8d5ba,stroke:#333
+    style Logic fill:#87ceeb,stroke:#333
+    style Agentic fill:#f4a460,stroke:#333
+    style External fill:#dda0dd,stroke:#333
+```
+
+---
+
+### 3. Explaining the Architecture for Judges
+
+| Concept | Description |
+|---------|-------------|
+| **Agentic Orchestration** | Unlike a traditional app, ours uses CrewAI to manage state. Each agent is a specialist. |
+| **Asynchronous Flow** | The high-latency work (web search) is isolated in Step 2, ensuring the rest of the UI feels snappy. |
+| **Micro-Services Ready** | Each agent is logically separate, making it easy to add more specialized agents in the future. |
+
+---
+
 ## 📄 License
 
 MIT
