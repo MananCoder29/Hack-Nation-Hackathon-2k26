@@ -140,21 +140,71 @@ backend/
     └── utils/              # Validators
 ```
 
-## 🚢 Deployment
+## 🚢 Deployment (Google Cloud Run)
 
-### Environment Variables
+### Prerequisites
 
-Set in your deployment platform:
-```
-OPENAI_API_KEY=sk-...
-TAVILY_API_KEY=tvly-...
-STRIPE_SECRET_KEY=sk_test_...
-CORS_ORIGINS=https://your-frontend.app
-```
+1. Install [Google Cloud CLI](https://cloud.google.com/sdk/docs/install)
+2. Authenticate with GCP:
+   ```bash
+   gcloud auth login
+   gcloud config set project YOUR_PROJECT_ID
+   ```
 
-### Deploy Command
+### Deploy with gcloud
+
 ```bash
-uv run uvicorn src.main:app --host 0.0.0.0 --port $PORT
+# Navigate to backend directory
+cd backend
+
+# Build and deploy in one command
+gcloud run deploy retreat-planner-backend \
+  --source . \
+  --region us-central1 \
+  --allow-unauthenticated \
+  --set-env-vars "OPENAI_API_KEY=sk-...,TAVILY_API_KEY=tvly-...,STRIPE_SECRET_KEY=sk_test_...,CORS_ORIGINS=https://your-frontend.app"
+```
+
+### Alternative: Build and Deploy Separately
+
+```bash
+# Step 1: Build the container image
+gcloud builds submit --tag gcr.io/YOUR_PROJECT_ID/retreat-planner-backend
+
+# Step 2: Deploy to Cloud Run
+gcloud run deploy retreat-planner-backend \
+  --image gcr.io/YOUR_PROJECT_ID/retreat-planner-backend \
+  --region us-central1 \
+  --platform managed \
+  --allow-unauthenticated \
+  --memory 1Gi \
+  --cpu 1 \
+  --timeout 300
+```
+
+### Set Environment Variables (After Deployment)
+
+```bash
+gcloud run services update retreat-planner-backend \
+  --region us-central1 \
+  --set-env-vars "OPENAI_API_KEY=sk-..." \
+  --set-env-vars "TAVILY_API_KEY=tvly-..." \
+  --set-env-vars "STRIPE_SECRET_KEY=sk_test_..." \
+  --set-env-vars "CORS_ORIGINS=https://your-frontend.app"
+```
+
+### View Deployment URL
+
+```bash
+gcloud run services describe retreat-planner-backend \
+  --region us-central1 \
+  --format "value(status.url)"
+```
+
+### Local Development
+
+```bash
+uv run uvicorn src.main:app --reload --port 8000
 ```
 
 ## 🏛️ System Architecture Diagrams
