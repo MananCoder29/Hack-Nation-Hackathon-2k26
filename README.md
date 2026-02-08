@@ -219,7 +219,27 @@ These diagrams visualize how your agents collaborate and how the frontend intera
 This sequence diagram shows how the 5 agents work together to turn a single chat message into a confirmed booking.
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4F46E5', 'primaryTextColor': '#fff', 'primaryBorderColor': '#4338CA', 'lineColor': '#6366F1', 'secondaryColor': '#10B981', 'tertiaryColor': '#F59E0B', 'noteBkgColor': '#FEF3C7', 'noteTextColor': '#92400E', 'actorBkg': '#E0E7FF', 'actorTextColor': '#3730A3', 'actorBorder': '#6366F1'}}}%%
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#4F46E5',
+    'primaryTextColor': '#111827',
+    'primaryBorderColor': '#4338CA',
+    'lineColor': '#374151',
+
+    'secondaryColor': '#10B981',
+    'tertiaryColor': '#F59E0B',
+
+    'noteBkgColor': '#FEF3C7',
+    'noteTextColor': '#1F2937',
+
+    'actorBkg': '#E0E7FF',
+    'actorTextColor': '#1E3A8A',
+    'actorBorder': '#6366F1',
+
+    'labelTextColor': '#111827'
+  }
+}}%%
 sequenceDiagram
     autonumber
     participant User as 💻 User (Frontend)
@@ -230,7 +250,7 @@ sequenceDiagram
     participant A5 as 💳 Agent 5: Checkout
 
     rect rgb(239, 246, 255)
-        User->>A1: "Plan a Paris retreat..."
+        User->>A1: Plan a Paris retreat
         Note over A1: Step 1: Input Analysis
         A1->>A1: Extract attendees, budget, location
         A1-->>User: Returns Structured Brief
@@ -261,7 +281,7 @@ sequenceDiagram
         User->>A5: Final Checkout
         Note over A5: Step 5: Master Booking
         A5->>A5: Simulated Payment (Stripe)
-        A5-->>User: RETURNS Master Confirmation ID
+        A5-->>User: Returns Master Confirmation ID
     end
 ```
 
