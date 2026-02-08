@@ -5,11 +5,16 @@ ENV UV_LINK_MODE=copy
 
 WORKDIR /app
 
-# Copy dependency files first
-COPY uv.lock pyproject.toml ./
+# Copy dependency files (uv.lock is optional)
+COPY pyproject.toml uv.lock* ./
 
-# Install dependencies without cache mounts
-RUN uv sync --frozen --no-install-project --no-dev
+# Install dependencies
+# If uv.lock exists, use --frozen for consistency
+RUN if [ -f uv.lock ]; then \
+    uv sync --frozen --no-install-project --no-dev; \
+    else \
+    uv sync --no-install-project --no-dev; \
+    fi
 
 # Final stage
 FROM python:3.11-slim-bookworm

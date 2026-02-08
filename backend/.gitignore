@@ -28,7 +28,7 @@ env/
 
 # UV
 .uv/
-uv.lock
+# uv.lock  <-- Removed from ignore to allow deployment
 
 # IDE
 .idea/
