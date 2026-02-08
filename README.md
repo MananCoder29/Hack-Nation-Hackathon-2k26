@@ -43,9 +43,10 @@ uv run python -m src.main
 
 ## 📚 API Documentation
 
-Once running, visit:
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
+**Live API (Hosted on GCP Cloud Run)**:
+- **Base URL**: https://hack-nation-backend-490752502534.europe-west3.run.app
+- **Swagger UI**: https://hack-nation-backend-490752502534.europe-west3.run.app/docs
+- **ReDoc**: https://hack-nation-backend-490752502534.europe-west3.run.app/redoc
 
 ## 🔌 Endpoints
 
@@ -73,7 +74,7 @@ Once running, visit:
 ### 1. Full Flow (Quick Test)
 
 ```bash
-curl -X POST http://localhost:8000/api/v1/full-flow \
+curl -X POST https://hack-nation-backend-490752502534.europe-west3.run.app/api/v1/full-flow \
   -H "Content-Type: application/json" \
   -d '{
     "user_input": "Plan a 2-day retreat in Las Vegas for 50 managers. Budget $60,000. Need 4-star hotel, flights from SF, meeting room, catering."
@@ -84,20 +85,20 @@ curl -X POST http://localhost:8000/api/v1/full-flow \
 
 ```bash
 # Step 1: Analyze requirements
-curl -X POST http://localhost:8000/api/v1/analyze-requirements \
+curl -X POST https://hack-nation-backend-490752502534.europe-west3.run.app/api/v1/analyze-requirements \
   -H "Content-Type: application/json" \
   -d '{"user_input": "50 people, Las Vegas, 2 days, $60k budget"}'
 
 # Save the session_id from response
 
 # Step 2: Discover options
-curl -X POST "http://localhost:8000/api/v1/discover-options?session_id=YOUR_SESSION_ID"
+curl -X POST "https://hack-nation-backend-490752502534.europe-west3.run.app/api/v1/discover-options?session_id=YOUR_SESSION_ID"
 
 # Step 3: Rank packages
-curl -X POST "http://localhost:8000/api/v1/rank-packages?session_id=YOUR_SESSION_ID"
+curl -X POST "https://hack-nation-backend-490752502534.europe-west3.run.app/api/v1/rank-packages?session_id=YOUR_SESSION_ID"
 
 # Step 4: Build cart (use package_id from ranked results)
-curl -X POST "http://localhost:8000/api/v1/cart/build?session_id=YOUR_SESSION_ID&package_id=pkg_abc123"
+curl -X POST "https://hack-nation-backend-490752502534.europe-west3.run.app/api/v1/cart/build?session_id=YOUR_SESSION_ID&package_id=pkg_abc123"
 ```
 
 ## 🎯 Dynamic Scoring
@@ -218,39 +219,50 @@ These diagrams visualize how your agents collaborate and how the frontend intera
 This sequence diagram shows how the 5 agents work together to turn a single chat message into a confirmed booking.
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4F46E5', 'primaryTextColor': '#fff', 'primaryBorderColor': '#4338CA', 'lineColor': '#6366F1', 'secondaryColor': '#10B981', 'tertiaryColor': '#F59E0B', 'noteBkgColor': '#FEF3C7', 'noteTextColor': '#92400E', 'actorBkg': '#E0E7FF', 'actorTextColor': '#3730A3', 'actorBorder': '#6366F1'}}}%%
 sequenceDiagram
     autonumber
-    participant User as User (Frontend)
-    participant A1 as Agent 1: Requirements
-    participant A2 as Agent 2: Discovery
-    participant A3 as Agent 3: Ranking
-    participant A4 as Agent 4: Cart
-    participant A5 as Agent 5: Checkout
+    participant User as 💻 User (Frontend)
+    participant A1 as 📋 Agent 1: Requirements
+    participant A2 as 🔍 Agent 2: Discovery
+    participant A3 as 🏆 Agent 3: Ranking
+    participant A4 as 🛒 Agent 4: Cart
+    participant A5 as 💳 Agent 5: Checkout
 
-    User->>A1: "Plan a Paris retreat..."
-    Note over A1: Step 1: Input Analysis
-    A1->>A1: Extract attendees, budget, location
-    A1-->>User: Returns Structured Brief
+    rect rgb(239, 246, 255)
+        User->>A1: "Plan a Paris retreat..."
+        Note over A1: Step 1: Input Analysis
+        A1->>A1: Extract attendees, budget, location
+        A1-->>User: Returns Structured Brief
+    end
 
-    User->>A2: Request Discovery
-    Note over A2: Step 2: Multi-Source Discovery
-    A2->>A2: Web Search (Tavily)
-    A2-->>User: Returns Vendor Options
+    rect rgb(236, 253, 245)
+        User->>A2: Request Discovery
+        Note over A2: Step 2: Multi-Source Discovery
+        A2->>A2: Web Search (Tavily)
+        A2-->>User: Returns Vendor Options
+    end
 
-    User->>A3: Rank with Weights
-    Note over A3: Step 3: Interactive Scoring
-    A3->>A3: Apply Weighted Math
-    A3-->>User: Returns Scored Packages
+    rect rgb(255, 251, 235)
+        User->>A3: Rank with Weights
+        Note over A3: Step 3: Interactive Scoring
+        A3->>A3: Apply Weighted Math
+        A3-->>User: Returns Scored Packages
+    end
 
-    User->>A4: Build Cart
-    Note over A4: Step 4: Cart Optimization
-    A4->>A4: Calc Subtotal, Tax, Fees
-    A4-->>User: Returns Final Cart
+    rect rgb(254, 242, 242)
+        User->>A4: Build Cart
+        Note over A4: Step 4: Cart Optimization
+        A4->>A4: Calc Subtotal, Tax, Fees
+        A4-->>User: Returns Final Cart
+    end
 
-    User->>A5: Final Checkout
-    Note over A5: Step 5: Master Booking
-    A5->>A5: Simulated Payment (Stripe)
-    A5-->>User: RETURNS Master Confirmation ID
+    rect rgb(245, 243, 255)
+        User->>A5: Final Checkout
+        Note over A5: Step 5: Master Booking
+        A5->>A5: Simulated Payment (Stripe)
+        A5-->>User: RETURNS Master Confirmation ID
+    end
 ```
 
 ---
@@ -260,28 +272,29 @@ sequenceDiagram
 Professional block diagram with color-coded layers.
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px'}}}%%
 flowchart TB
-    subgraph Presentation["Presentation Layer (Lovable)"]
-        UI["React + Tailwind UI"]
-        Session["Session Management"]
+    subgraph Presentation["🖥️ Presentation Layer - Lovable"]
+        UI["⚛️ React + Tailwind UI"]
+        Session["🗃️ Session Management"]
     end
 
-    subgraph Logic["Logic Layer (Google Cloud Run)"]
-        API["FastAPI Endpoints"]
+    subgraph Logic["☁️ Logic Layer - Google Cloud Run"]
+        API["⚡ FastAPI Endpoints"]
     end
 
-    subgraph Agentic["Agentic Core (CrewAI)"]
-        RA["Requirements Analyst"]
-        DA["Discovery Agent"]
-        RankA["Ranking Agent"]
-        CA["Cart Agent"]
-        ChA["Checkout Agent"]
+    subgraph Agentic["🤖 Agentic Core - CrewAI"]
+        RA["📋 Requirements Analyst"]
+        DA["🔍 Discovery Agent"]
+        RankA["🏆 Ranking Agent"]
+        CA["🛒 Cart Agent"]
+        ChA["💳 Checkout Agent"]
     end
 
-    subgraph External["External Services"]
-        Tavily["Tavily Search API"]
-        OpenAI["OpenAI LLM"]
-        Stripe["Stripe Payments"]
+    subgraph External["🌐 External Services"]
+        Tavily["🔎 Tavily Search API"]
+        OpenAI["🧠 OpenAI LLM"]
+        Stripe["💵 Stripe Payments"]
     end
 
     UI --> Session
@@ -300,10 +313,22 @@ flowchart TB
     ChA --> Stripe
     ChA --> OpenAI
 
-    style Presentation fill:#a8d5ba,stroke:#333
-    style Logic fill:#87ceeb,stroke:#333
-    style Agentic fill:#f4a460,stroke:#333
-    style External fill:#dda0dd,stroke:#333
+    style Presentation fill:#22C55E,stroke:#16A34A,stroke-width:2px,color:#fff
+    style Logic fill:#3B82F6,stroke:#2563EB,stroke-width:2px,color:#fff
+    style Agentic fill:#F97316,stroke:#EA580C,stroke-width:2px,color:#fff
+    style External fill:#A855F7,stroke:#9333EA,stroke-width:2px,color:#fff
+    
+    style UI fill:#4ADE80,stroke:#22C55E,color:#000
+    style Session fill:#4ADE80,stroke:#22C55E,color:#000
+    style API fill:#60A5FA,stroke:#3B82F6,color:#000
+    style RA fill:#FB923C,stroke:#F97316,color:#000
+    style DA fill:#FB923C,stroke:#F97316,color:#000
+    style RankA fill:#FB923C,stroke:#F97316,color:#000
+    style CA fill:#FB923C,stroke:#F97316,color:#000
+    style ChA fill:#FB923C,stroke:#F97316,color:#000
+    style Tavily fill:#C084FC,stroke:#A855F7,color:#000
+    style OpenAI fill:#C084FC,stroke:#A855F7,color:#000
+    style Stripe fill:#C084FC,stroke:#A855F7,color:#000
 ```
 
 ---
